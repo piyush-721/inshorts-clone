@@ -4,7 +4,7 @@ const CATEGORY_MAP = {
   'My Feed': 'general',
   'Budget Center': 'business',
   'Finance': 'business',
-  'Timeline': 'technology',
+  'Time': 'technology',
 };
 
 const API_KEY = '486f237f46bb4ea8a7ecf1be40805aa4';

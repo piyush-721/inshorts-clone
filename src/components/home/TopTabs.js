@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-const TopTabs = () => {
-  const [activeTab, setActiveTab] = useState('My Feed');
+const TopTabs = ({ activeTab, setActiveTab }) => {
   const tabs = ['My Feed', 'Budget Center', 'Finance', 'Time'];
 
   const handleTabClick = (tab) => {
