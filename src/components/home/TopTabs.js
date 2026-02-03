@@ -14,7 +14,7 @@ const TopTabs = () => {
       <div className="fade-mask-left"></div>
       <div className="fade-mask-right"></div>
       
-      <div className="d-flex flex-nowrap gap-3 overflow-auto hide-scrollbar scrollable-tabs">
+      <div className="d-flex flex-nowrap gap-2 overflow-auto hide-scrollbar scrollable-tabs">
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -28,7 +28,7 @@ const TopTabs = () => {
         ))}
       </div>
 
-      <style jsx>{`
+      <style >{`
         .hide-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
