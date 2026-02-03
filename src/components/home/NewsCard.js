@@ -7,7 +7,7 @@ const CATEGORY_MAP = {
   'Time': 'technology',
 };
 
-const API_KEY = '486f237f46bb4ea8a7ecf1be40805aa4';
+const API_KEY = 'b075f1435c386355c1ec5c721563181f'; // MediaStack API Key
 const TOP_TABS_HEIGHT = 72;
 
 const NewsCard = ({ activeTab }) => {
@@ -15,21 +15,20 @@ const NewsCard = ({ activeTab }) => {
   const [index, setIndex] = useState(0);
   const touchStartY = useRef(0);
 
-  // ✅ Fixed: fetchNews moved inside useEffect
+  // Fetch news on tab change
   useEffect(() => {
     const fetchNews = async () => {
       try {
         const res = await fetch(
-          `https://newsapi.org/v2/top-headlines?country=us&category=${CATEGORY_MAP[activeTab]}&apiKey=${API_KEY}`
+          `http://api.mediastack.com/v1/news?access_key=${API_KEY}&categories=${CATEGORY_MAP[activeTab]}&languages=en&limit=10`
         );
         const data = await res.json();
-        setArticles(data.articles || []);
+        setArticles(data.data || []);
         setIndex(0);
       } catch (err) {
         console.error('Error fetching news:', err);
       }
     };
-
     fetchNews();
   }, [activeTab]);
 
@@ -60,7 +59,7 @@ const NewsCard = ({ activeTab }) => {
     >
       {/* Top Image */}
       <img
-        src={article.urlToImage}
+        src={article.image}
         alt=""
         className="w-100"
         style={{ height: '38%', objectFit: 'cover' }}
@@ -71,10 +70,9 @@ const NewsCard = ({ activeTab }) => {
         <h5 className="fw-bold mb-3">{article.title}</h5>
         <p className="text-secondary mb-3" style={{ lineHeight: 1.6 }}>
           {article.description}
-          {article.content?.replace(/\[\+\d+ chars\]/, '')}
         </p>
         <small className="text-muted mt-auto mb-2">
-          {timeAgo(article.publishedAt)} | {article.source?.name}
+          {article.published_at ? timeAgo(article.published_at) : ''} | {article.source}
         </small>
       </div>
 
@@ -83,7 +81,7 @@ const NewsCard = ({ activeTab }) => {
         className="position-relative d-flex justify-content-center align-items-center text-center"
         style={{
           height: '12%',
-          backgroundImage: `url(${article.urlToImage})`,
+          backgroundImage: `url(${article.image})`,
           backgroundSize: '180%',
           backgroundPosition: 'center',
         }}
@@ -93,7 +91,7 @@ const NewsCard = ({ activeTab }) => {
           style={{ background: 'rgba(0,0,0,0.45)' }}
         />
         <span className="position-relative text-white fw-semibold px-3">
-          {article.source?.name}
+          {article.source}
         </span>
       </div>
     </div>
