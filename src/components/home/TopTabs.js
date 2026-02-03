@@ -30,6 +30,7 @@ const TopTabs = ({ activeTab, setActiveTab }) => {
           scrollbar-width: none;
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
+
         .fade-left, .fade-right {
           position: absolute;
           top: 0;

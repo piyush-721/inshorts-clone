@@ -15,18 +15,23 @@ const NewsCard = ({ activeTab }) => {
   const [index, setIndex] = useState(0);
   const touchStartY = useRef(0);
 
+  // ✅ Fixed: fetchNews moved inside useEffect
   useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const res = await fetch(
+          `https://newsapi.org/v2/top-headlines?country=us&category=${CATEGORY_MAP[activeTab]}&apiKey=${API_KEY}`
+        );
+        const data = await res.json();
+        setArticles(data.articles || []);
+        setIndex(0);
+      } catch (err) {
+        console.error('Error fetching news:', err);
+      }
+    };
+
     fetchNews();
   }, [activeTab]);
-
-  const fetchNews = async () => {
-    const res = await fetch(
-      `https://newsapi.org/v2/top-headlines?country=us&category=${CATEGORY_MAP[activeTab]}&apiKey=${API_KEY}`
-    );
-    const data = await res.json();
-    setArticles(data.articles || []);
-    setIndex(0);
-  };
 
   const timeAgo = (date) => {
     const hrs = Math.floor((Date.now() - new Date(date)) / 3600000);
