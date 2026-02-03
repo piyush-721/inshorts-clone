@@ -18,7 +18,7 @@ const TopTabs = () => {
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={`btn px-4 py-2 rounded-3 fw-medium text-nowrap flex-shrink-0 transition-all ${
+            className={`btn px-4 py-1 rounded-3 fw-medium text-nowrap flex-shrink-0 transition-all ${
               activeTab === tab ? 'active-tab' : 'inactive-tab'
             }`}
             onClick={() => handleTabClick(tab)}
