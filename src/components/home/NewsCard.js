@@ -35,10 +35,7 @@ const NewsCard = ({ activeTab }) => {
     return `${hrs} hours ago`;
   };
 
-  const onTouchStart = (e) => {
-    touchStartY.current = e.touches[0].clientY;
-  };
-
+  const onTouchStart = (e) => (touchStartY.current = e.touches[0].clientY);
   const onTouchEnd = (e) => {
     const diff = touchStartY.current - e.changedTouches[0].clientY;
     if (diff > 60 && index < articles.length - 1) setIndex(index + 1);
@@ -50,13 +47,13 @@ const NewsCard = ({ activeTab }) => {
 
   return (
     <div
-      className="w-100 d-flex flex-column"
+      className="d-flex flex-column w-100"
       style={{ height: `calc(100vh - ${TOP_TABS_HEIGHT}px)` }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       onClick={() => window.open(article.url, '_blank')}
     >
-      {/* TOP IMAGE */}
+      {/* Top Image */}
       <img
         src={article.urlToImage}
         alt=""
@@ -64,48 +61,32 @@ const NewsCard = ({ activeTab }) => {
         style={{ height: '38%', objectFit: 'cover' }}
       />
 
-      {/* TEXT CONTENT */}
+      {/* Text Content */}
       <div className="flex-grow-1 px-3 pt-3 d-flex flex-column">
-        <h5 className="fw-bold mb-3">
-          {article.title}
-        </h5>
-
-        {/* MORE DESCRIPTION SPACE */}
-<p
-  className="text-secondary fs-6 mb-3"
-  style={{
-    lineHeight: '1.6',
-  }}
->
-  {article.description}
-
-  {article.content?.replace(/\[\+\d+ chars\]/, '')}
-</p>
-
-
-
+        <h5 className="fw-bold mb-3">{article.title}</h5>
+        <p className="text-secondary mb-3" style={{ lineHeight: 1.6 }}>
+          {article.description}
+          {article.content?.replace(/\[\+\d+ chars\]/, '')}
+        </p>
         <small className="text-muted mt-auto mb-2">
           {timeAgo(article.publishedAt)} | {article.source?.name}
         </small>
       </div>
 
-      {/* BOTTOM ZOOMED IMAGE SECTION */}
+      {/* Bottom Zoomed Image */}
       <div
         className="position-relative d-flex justify-content-center align-items-center text-center"
         style={{
           height: '12%',
           backgroundImage: `url(${article.urlToImage})`,
-          backgroundSize: '180%',     // 👈 heavy zoom
+          backgroundSize: '180%',
           backgroundPosition: 'center',
         }}
       >
-        {/* Fade overlay */}
         <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{ background: 'rgba(0,0,0,0.45)' }}
         />
-
-        {/* CENTERED TITLE */}
         <span className="position-relative text-white fw-semibold px-3">
           {article.source?.name}
         </span>
