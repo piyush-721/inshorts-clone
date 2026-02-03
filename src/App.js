@@ -1,19 +1,18 @@
-import { useState } from 'react';
 import TopTabs from './components/home/TopTabs';
 import NewsCard from './components/home/NewsCard';
+import BottomNav from './components/common/BottomNav'; // 👈 ADD
+import { useState } from 'react';
 
-function App() {
+export default function App() {
   const [activeTab, setActiveTab] = useState('My Feed');
 
   return (
-    <div className="min-vh-100">
-      {/* Top Tabs (UI only) */}
+    <div className="min-vh-100 d-flex flex-column">
       <TopTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      {/* News Feed */}
-      <NewsCard activeTab={activeTab} />
+      <div className="flex-grow-1">
+        <NewsCard activeTab={activeTab} />
+      </div>
+      <BottomNav /> {/* 👈 ADD - Fixed bottom */}
     </div>
   );
 }
-
-export default App;

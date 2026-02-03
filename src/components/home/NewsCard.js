@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 const CATEGORY_MAP = {
   'My Feed': 'general',
   'Budget Center': 'business',
-  'Finance': 'business',
+  'Finance': 'finance',
   'Time': 'technology',
 };
 
-const API_KEY = 'b075f1435c386355c1ec5c721563181f'; // MediaStack API Key
+
+const API_KEY = '486f237f46bb4ea8a7ecf1be40805aa4';
 const TOP_TABS_HEIGHT = 72;
 
 const NewsCard = ({ activeTab }) => {
@@ -15,22 +16,18 @@ const NewsCard = ({ activeTab }) => {
   const [index, setIndex] = useState(0);
   const touchStartY = useRef(0);
 
-  // Fetch news on tab change
   useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const res = await fetch(
-          `http://api.mediastack.com/v1/news?access_key=${API_KEY}&categories=${CATEGORY_MAP[activeTab]}&languages=en&limit=10`
-        );
-        const data = await res.json();
-        setArticles(data.data || []);
-        setIndex(0);
-      } catch (err) {
-        console.error('Error fetching news:', err);
-      }
-    };
     fetchNews();
   }, [activeTab]);
+
+  const fetchNews = async () => {
+    const res = await fetch(
+      `https://newsapi.org/v2/top-headlines?country=us&category=${CATEGORY_MAP[activeTab]}&apiKey=${API_KEY}`
+    );
+    const data = await res.json();
+    setArticles(data.articles || []);
+    setIndex(0);
+  };
 
   const timeAgo = (date) => {
     const hrs = Math.floor((Date.now() - new Date(date)) / 3600000);
@@ -39,60 +36,87 @@ const NewsCard = ({ activeTab }) => {
     return `${hrs} hours ago`;
   };
 
-  const onTouchStart = (e) => (touchStartY.current = e.touches[0].clientY);
-  const onTouchEnd = (e) => {
-    const diff = touchStartY.current - e.changedTouches[0].clientY;
-    if (diff > 60 && index < articles.length - 1) setIndex(index + 1);
-    if (diff < -60 && index > 0) setIndex(index - 1);
+  const onTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
   };
 
-  const article = articles[index];
-  if (!article) return null;
+  const onTouchEnd = (e) => {
+    const diff = touchStartY.current - e.changedTouches[0].clientY;
+
+    if (diff > 60 && index < articles.length - 1) {
+      setIndex((prev) => prev + 1);
+    }
+
+    if (diff < -60 && index > 0) {
+      setIndex((prev) => prev - 1);
+    }
+  };
 
   return (
     <div
-      className="d-flex flex-column w-100"
+      className="w-100 overflow-hidden"
       style={{ height: `calc(100vh - ${TOP_TABS_HEIGHT}px)` }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      onClick={() => window.open(article.url, '_blank')}
     >
-      {/* Top Image */}
-      <img
-        src={article.image}
-        alt=""
-        className="w-100"
-        style={{ height: '38%', objectFit: 'cover' }}
-      />
-
-      {/* Text Content */}
-      <div className="flex-grow-1 px-3 pt-3 d-flex flex-column">
-        <h5 className="fw-bold mb-3">{article.title}</h5>
-        <p className="text-secondary mb-3" style={{ lineHeight: 1.6 }}>
-          {article.description}
-        </p>
-        <small className="text-muted mt-auto mb-2">
-          {article.published_at ? timeAgo(article.published_at) : ''} | {article.source}
-        </small>
-      </div>
-
-      {/* Bottom Zoomed Image */}
+      {/* SLIDER */}
       <div
-        className="position-relative d-flex justify-content-center align-items-center text-center"
         style={{
-          height: '12%',
-          backgroundImage: `url(${article.image})`,
-          backgroundSize: '180%',
-          backgroundPosition: 'center',
+          height: '100%',
+          transform: `translateY(-${index * 100}%)`,
+          transition: 'transform 0.35s ease-in-out',
         }}
       >
-        <div
-          className="position-absolute top-0 start-0 w-100 h-100"
-          style={{ background: 'rgba(0,0,0,0.45)' }}
-        />
-        <span className="position-relative text-white fw-semibold px-3">
-          {article.source}
-        </span>
+        {articles.map((article, i) => (
+          <div
+            key={i}
+            className="d-flex flex-column w-100"
+            style={{ height: '100%' }}
+            onClick={() => window.open(article.url, '_blank')}
+          >
+            {/* Top Image */}
+            <img
+              src={article.urlToImage}
+              alt=""
+              className="w-100"
+              style={{ height: '38%', objectFit: 'cover' }}
+            />
+
+            {/* Text Content */}
+            <div className="flex-grow-1 px-3 pt-3 d-flex flex-column">
+              <h5 className="fw-bold mb-3">{article.title}</h5>
+              <p className="text-secondary mb-3" style={{ lineHeight: 1.6 }}>
+                {article.description}
+                {article.content?.replace(/\[\+\d+ chars\]/, '')}
+              </p>
+              <small className="text-muted mt-auto mb-2">
+                {timeAgo(article.publishedAt)} | {article.source?.name}
+              </small>
+            </div>
+
+            {/* Bottom Zoomed + Blurred Image */}
+            <div
+              className="position-relative d-flex justify-content-center align-items-center text-center"
+              style={{
+                height: '12%',
+                backgroundImage: `url(${article.urlToImage})`,
+                backgroundSize: '180%',
+                backgroundPosition: 'center',
+              }}
+            >
+              <div
+                className="position-absolute top-0 start-0 w-100 h-100"
+                style={{
+                  backdropFilter: 'blur(6px)',
+                  background: 'rgba(0,0,0,0.45)',
+                }}
+              />
+              <span className="position-relative text-white fw-semibold px-3">
+                {article.source?.name}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
